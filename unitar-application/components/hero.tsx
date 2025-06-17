@@ -14,10 +14,10 @@ export function Hero() {
       </div>
       <div className="flex flex-row gap-4 items-center">
         <Button variant={"default"} asChild>
-          <Link href="/sign-up">New Application</Link>
+          <Link href="/auth/sign-up">New Application</Link>
         </Button>
         <Button variant={"outline"} asChild>
-          <Link href="/login">Existing Student</Link>
+          <Link href="/auth/login">Existing Student</Link>
         </Button>
       </div>
     </div>

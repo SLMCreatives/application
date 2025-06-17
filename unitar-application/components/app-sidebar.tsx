@@ -2,15 +2,10 @@
 
 import * as React from "react";
 import {
-  BookOpen,
-  Bot,
+  CircleArrowRight,
   Command,
-  Frame,
   LifeBuoy,
-  Map,
-  PieChart,
   Send,
-  Settings2,
   UserCircle2
 } from "lucide-react";
 
@@ -36,86 +31,25 @@ const data = {
   },
   navMain: [
     {
-      title: "Personal Information",
+      title: "Active Students",
       url: "#",
       icon: UserCircle2,
       isActive: true,
       items: [
         {
-          title: "History",
+          title: "Overview",
           url: "#"
         },
         {
-          title: "Starred",
+          title: "Communications",
           url: "#"
         },
         {
-          title: "Settings",
-          url: "#"
-        }
-      ]
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
+          title: "Programmes",
           url: "#"
         },
         {
-          title: "Explorer",
-          url: "#"
-        },
-        {
-          title: "Quantum",
-          url: "#"
-        }
-      ]
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#"
-        },
-        {
-          title: "Get Started",
-          url: "#"
-        },
-        {
-          title: "Tutorials",
-          url: "#"
-        },
-        {
-          title: "Changelog",
-          url: "#"
-        }
-      ]
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#"
-        },
-        {
-          title: "Team",
-          url: "#"
-        },
-        {
-          title: "Billing",
-          url: "#"
-        },
-        {
-          title: "Limits",
+          title: "Finance",
           url: "#"
         }
       ]
@@ -133,21 +67,31 @@ const data = {
       icon: Send
     }
   ],
-  projects: [
+  intake: [
     {
-      name: "Design Engineering",
+      name: "Jan",
       url: "#",
-      icon: Frame
+      icon: CircleArrowRight
     },
     {
-      name: "Sales & Marketing",
+      name: "Feb",
       url: "#",
-      icon: PieChart
+      icon: CircleArrowRight
     },
     {
-      name: "Travel",
+      name: "May",
       url: "#",
-      icon: Map
+      icon: CircleArrowRight
+    },
+    {
+      name: "June",
+      url: "#",
+      icon: CircleArrowRight
+    },
+    {
+      name: "Sept",
+      url: "#",
+      icon: CircleArrowRight
     }
   ]
 };
@@ -167,8 +111,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <Command className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">Acme Inc</span>
-                  <span className="truncate text-xs">Enterprise</span>
+                  <span className="truncate font-medium">
+                    Student Management
+                  </span>
+                  <span className="truncate text-xs">UNITAR</span>
                 </div>
               </a>
             </SidebarMenuButton>
@@ -177,7 +123,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavProjects projects={data.intake} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
