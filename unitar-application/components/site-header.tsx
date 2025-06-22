@@ -41,7 +41,7 @@ export default function SiteHeader() {
         <Breadcrumb className="hidden sm:block">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="#">Student Data</BreadcrumbLink>
+              <BreadcrumbLink href="/dashboard">Student Data</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>

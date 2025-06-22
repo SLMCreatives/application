@@ -32,7 +32,7 @@ interface Qualification {
 export default function QualificationInfoForm() {
   const [qualifications, setQualifications] = useState<Qualification[]>([
     {
-      id: crypto.randomUUID(),
+      id: "1",
       programmeName: "",
       institute: "",
       graduateYear: "",
@@ -48,7 +48,7 @@ export default function QualificationInfoForm() {
       setQualifications((prev) => [
         ...prev,
         {
-          id: crypto.randomUUID(),
+          id: `${prev.length + 1}`,
           programmeName: "",
           institute: "",
           graduateYear: "",

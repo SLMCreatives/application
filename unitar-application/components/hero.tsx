@@ -20,7 +20,7 @@ export function Hero() {
   }, [supabase]);
   return (
     <div className="flex flex-col gap-6 items-center ">
-      <div className="flex flex-col justify-center items-start gap-6">
+      <div className="flex flex-col justify-center items-start gap-4 lg:gap-6">
         <h2 className="text-3xl lg:text-6xl font-bold">UNITAR Quick Apply</h2>
         <h4 className="text-xl lg:text-3xl font-thin">
           Intake:{" "}

@@ -116,11 +116,13 @@ export default function PersonalInfoForm() {
 
     const { data, error } = await supabase
       .from("apps")
-      .insert([{ user_id: await getUserID(), user_meta: formData }]);
+      .upsert([{ user_id: await getUserID(), user_meta: formData }])
+      .eq("user_id", await getUserID())
+      .select();
 
     if (error) {
-      console.error(error);
-    } else if (data) {
+      console.log(error);
+    } else {
       console.log(data);
       toast("Personal information submitted successfully!");
       redirect("/setup/programme-info");

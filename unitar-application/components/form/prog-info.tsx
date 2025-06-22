@@ -202,7 +202,7 @@ export default function ProgrammeInfoForm() {
       console.log(error);
     } else {
       toast("Programme information submitted successfully");
-      redirect("/qualification-info");
+      redirect("/setup/qualification-info");
     }
     // Here you would typically send the formData to your backend
   };
