@@ -2,12 +2,9 @@ import { AppSidebar } from "@/components/app-sidebar";
 import SiteHeader from "@/components/site-header";
 import RawTable from "@/components/sms/RawTable";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/client";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+const supabase = createClient();
 
 const { data, error } = await supabase
   .from("student")
@@ -16,10 +13,6 @@ const { data, error } = await supabase
 if (error) {
   console.error(error);
 }
-
-/* export const iframeHeight = "800px";
-
-export const description = "A sidebar with a header and a search form."; */
 
 export default function Page() {
   return (

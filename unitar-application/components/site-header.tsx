@@ -14,9 +14,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useSidebar } from "@/components/ui/sidebar";
+import { createClient } from "@/lib/supabase/client";
+import { redirect } from "next/navigation";
 
 export default function SiteHeader() {
   const { toggleSidebar } = useSidebar();
+
+  function handleSignOut() {
+    const supabase = createClient();
+    supabase.auth.signOut();
+    redirect("/auth/login");
+  }
 
   return (
     <header className="bg-background sticky top-0 z-50 flex w-full items-center border-b">
@@ -43,6 +51,9 @@ export default function SiteHeader() {
         </Breadcrumb>
         <SearchForm className="w-full sm:ml-auto sm:w-auto" />
       </div>
+      <Button variant="default" onClick={handleSignOut}>
+        Sign Out
+      </Button>
     </header>
   );
 }

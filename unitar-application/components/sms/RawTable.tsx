@@ -25,6 +25,7 @@ export interface RawTableProps {
 export default function RawTable({ data }: RawTableProps) {
   return (
     <div className="flex-1 w-full p-10">
+      <h1 className="text-2xl font-bold mb-4">June 2025</h1>
       <DataTable columns={columns} data={data} />
     </div>
   );
