@@ -26,6 +26,7 @@ export default function Home() {
           <Hero />
           <Image
             src="/brand/hero_image_2.jpg"
+            loading="eager"
             width={1080}
             height={1920}
             alt="UNITAR Background"

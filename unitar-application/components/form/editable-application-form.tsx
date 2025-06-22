@@ -1,0 +1,395 @@
+"use client";
+
+import type React from "react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { createClient } from "@/lib/supabase/client";
+import { redirect } from "next/navigation";
+
+// Define interfaces for the data structure
+interface PersonalInfo {
+  firstName: string;
+  lastName: string;
+  nickname: string;
+  phoneNumber: string;
+  email: string;
+  nationality: string;
+}
+
+interface ProgrammeInfo {
+  areaOfStudy: string;
+  level: string;
+  availableProgramme: string;
+  studyMode: string;
+}
+
+interface Qualification {
+  id: string;
+  programmeName: string;
+  graduateYear: string;
+  results: string;
+  institute: string; // Added based on SQL data
+  transcriptFile: Record<string, unknown>; // Representing the {} from SQL
+}
+
+/* 
+// Mock initial data from the provided SQL INSERT statement
+const initialPersonalInfo: PersonalInfo = {
+  lastName: "Abdul Munaff",
+  nickname: "Man",
+  firstName: "Sulaiman Shafiq",
+  nationality: "Malaysian",
+  phoneNumber: "01121292383",
+  email: "sulaiman@slmcreatives.com"
+};
+
+const initialProgrammeInfo: ProgrammeInfo = {
+  level: "Foundation",
+  studyMode: "Online Distance Learning (ODL)",
+  areaOfStudy: "Business",
+  availableProgramme: "Foundation in Business Studies"
+};
+
+const initialQualificationInfo: Qualification[] = [
+  {
+    id: "50191fbc-40f1-46c3-8c8d-da2cdfd86625",
+    results: "CGPA 3.85",
+    institute: "Taylors Uni",
+    graduateYear: "2021",
+    programmeName: "Bachelor of Mass Comm (2)",
+    transcriptFile: {}
+  },
+  {
+    id: "4183fbaa-a81e-4f06-a451-47cdf94dd4f6",
+    results: "12As",
+    institute: "SMKDJ",
+    graduateYear: "2017",
+    programmeName: "SPM",
+    transcriptFile: {}
+  }
+]; */
+
+const mockPersonalInfo: PersonalInfo = {
+  firstName: "Sulaiman Shafiq",
+  lastName: "Abdul Munaff",
+  nickname: "Man",
+  phoneNumber: "01121292383",
+  email: "sulaiman@slmcreatives.com",
+  nationality: "Malaysian"
+};
+
+const mockProgrammeInfo: ProgrammeInfo = {
+  level: "Foundation",
+  studyMode: "Online Distance Learning (ODL)",
+  areaOfStudy: "Business",
+  availableProgramme: "Foundation in Business Studies"
+};
+
+const mockQualificationInfo: Qualification[] = [
+  {
+    id: "50191fbc-40f1-46c3-8c8d-da2cdfd86625",
+    results: "CGPA 3.85",
+    institute: "Taylors Uni",
+    graduateYear: "2021",
+    programmeName: "Bachelor of Mass Comm (2)",
+    transcriptFile: {}
+  },
+  {
+    id: "4183fbaa-a81e-4f06-a451-47cdf94dd4f6",
+    results: "12As",
+    institute: "SMKDJ",
+    graduateYear: "2017",
+    programmeName: "SPM",
+    transcriptFile: {}
+  }
+];
+
+const supabase = createClient();
+
+export default function ApplicationForm() {
+  const [personalInfo, setPersonalInfo] =
+    useState<PersonalInfo>(mockPersonalInfo);
+  const [programmeInfo, setProgrammeInfo] =
+    useState<ProgrammeInfo>(mockProgrammeInfo);
+  const [qualificationInfo, setQualificationInfo] = useState<Qualification[]>(
+    mockQualificationInfo
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handlePersonalInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPersonalInfo((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleProgrammeInfoChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value } = e.target;
+    setProgrammeInfo((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleQualificationChange = (
+    id: string,
+    field: keyof Omit<Qualification, "id" | "transcriptFile">,
+    value: string
+  ) => {
+    setQualificationInfo((prev) =>
+      prev.map((q) => (q.id === id ? { ...q, [field]: value } : q))
+    );
+  };
+
+  const getUserID = async () => {
+    const { data } = await supabase.auth.getUser();
+    return data.user?.id;
+  };
+
+  const handleSubmitApplication = async () => {
+    setIsSubmitting(true);
+    const { data, error } = await supabase
+      .from("apps")
+      .update({ status: "TRUE" })
+      .eq("user_id", await getUserID())
+      .select();
+    if (error) {
+      console.log(error);
+    }
+    if (data) {
+      console.log(data);
+      setIsSubmitting(false);
+      redirect("/thankyou");
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+      <Card className="w-full max-w-4xl mx-auto">
+        <CardHeader>
+          <CardTitle className="text-3xl">Application Preview</CardTitle>
+          <CardDescription>
+            Review and make any necessary edits to your application before
+            submitting.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-8">
+          {/* Personal Information Section */}
+          <div>
+            <h2 className="text-2xl font-semibold mb-4">
+              Personal Information
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
+                  id="firstName"
+                  name="firstName"
+                  value={personalInfo.firstName}
+                  onChange={handlePersonalInfoChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  id="lastName"
+                  name="lastName"
+                  value={personalInfo.lastName}
+                  onChange={handlePersonalInfoChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="nickname">Nickname</Label>
+                <Input
+                  id="nickname"
+                  name="nickname"
+                  value={personalInfo.nickname}
+                  onChange={handlePersonalInfoChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="phoneNumber">Phone Number</Label>
+                <Input
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  value={personalInfo.phoneNumber}
+                  onChange={handlePersonalInfoChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  value={personalInfo.email}
+                  onChange={handlePersonalInfoChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="nationality">Nationality</Label>
+                <Input
+                  id="nationality"
+                  name="nationality"
+                  value={personalInfo.nationality}
+                  onChange={handlePersonalInfoChange}
+                />
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Programme Information Section */}
+          <div>
+            <h2 className="text-2xl font-semibold mb-4">
+              Programme Information
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="areaOfStudy">Area of Study</Label>
+                <Input
+                  id="areaOfStudy"
+                  name="areaOfStudy"
+                  value={programmeInfo.areaOfStudy}
+                  onChange={handleProgrammeInfoChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="level">Level</Label>
+                <Input
+                  id="level"
+                  name="level"
+                  value={programmeInfo.level}
+                  onChange={handleProgrammeInfoChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="availableProgramme">Available Programme</Label>
+                <Input
+                  id="availableProgramme"
+                  name="availableProgramme"
+                  value={programmeInfo.availableProgramme}
+                  onChange={handleProgrammeInfoChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="studyMode">Study Mode</Label>
+                <Input
+                  id="studyMode"
+                  name="studyMode"
+                  value={programmeInfo.studyMode}
+                  onChange={handleProgrammeInfoChange}
+                />
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Qualifications Section */}
+          <div>
+            <h2 className="text-2xl font-semibold mb-4">Qualifications</h2>
+            <div className="space-y-6">
+              {qualificationInfo.map((q, index) => (
+                <div key={q.id} className="border p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-4">
+                    Qualification {index + 1}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor={`qual-programmeName-${q.id}`}>
+                        Programme Name
+                      </Label>
+                      <Input
+                        id={`qual-programmeName-${q.id}`}
+                        name="programmeName"
+                        value={q.programmeName}
+                        onChange={(e) =>
+                          handleQualificationChange(
+                            q.id,
+                            "programmeName",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor={`qual-institute-${q.id}`}>
+                        Institute
+                      </Label>
+                      <Input
+                        id={`qual-institute-${q.id}`}
+                        name="institute"
+                        value={q.institute}
+                        onChange={(e) =>
+                          handleQualificationChange(
+                            q.id,
+                            "institute",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor={`qual-graduateYear-${q.id}`}>
+                        Graduate Year
+                      </Label>
+                      <Input
+                        id={`qual-graduateYear-${q.id}`}
+                        name="graduateYear"
+                        type="number"
+                        value={q.graduateYear}
+                        onChange={(e) =>
+                          handleQualificationChange(
+                            q.id,
+                            "graduateYear",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor={`qual-results-${q.id}`}>Results</Label>
+                      <Input
+                        id={`qual-results-${q.id}`}
+                        name="results"
+                        value={q.results}
+                        onChange={(e) =>
+                          handleQualificationChange(
+                            q.id,
+                            "results",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <Label>Transcript</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Transcript uploaded (placeholder). Re-upload
+                        functionality not available on this page.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter className="flex justify-end">
+          <Button onClick={handleSubmitApplication} disabled={isSubmitting}>
+            {isSubmitting ? "Submitting..." : "Submit Application"}
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
+  );
+}
