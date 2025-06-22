@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/lib/supabase/client";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 // Define interfaces for the data structure
 interface PersonalInfo {
@@ -43,44 +44,7 @@ interface Qualification {
   transcriptFile: Record<string, unknown>; // Representing the {} from SQL
 }
 
-/* 
-// Mock initial data from the provided SQL INSERT statement
-const initialPersonalInfo: PersonalInfo = {
-  lastName: "Abdul Munaff",
-  nickname: "Man",
-  firstName: "Sulaiman Shafiq",
-  nationality: "Malaysian",
-  phoneNumber: "01121292383",
-  email: "sulaiman@slmcreatives.com"
-};
-
-const initialProgrammeInfo: ProgrammeInfo = {
-  level: "Foundation",
-  studyMode: "Online Distance Learning (ODL)",
-  areaOfStudy: "Business",
-  availableProgramme: "Foundation in Business Studies"
-};
-
-const initialQualificationInfo: Qualification[] = [
-  {
-    id: "50191fbc-40f1-46c3-8c8d-da2cdfd86625",
-    results: "CGPA 3.85",
-    institute: "Taylors Uni",
-    graduateYear: "2021",
-    programmeName: "Bachelor of Mass Comm (2)",
-    transcriptFile: {}
-  },
-  {
-    id: "4183fbaa-a81e-4f06-a451-47cdf94dd4f6",
-    results: "12As",
-    institute: "SMKDJ",
-    graduateYear: "2017",
-    programmeName: "SPM",
-    transcriptFile: {}
-  }
-]; */
-
-const mockPersonalInfo: PersonalInfo = {
+/* const mockPersonalInfo: PersonalInfo = {
   firstName: "Sulaiman Shafiq",
   lastName: "Abdul Munaff",
   nickname: "Man",
@@ -88,8 +52,8 @@ const mockPersonalInfo: PersonalInfo = {
   email: "sulaiman@slmcreatives.com",
   nationality: "Malaysian"
 };
-
-const mockProgrammeInfo: ProgrammeInfo = {
+ */
+/* const mockProgrammeInfo: ProgrammeInfo = {
   level: "Foundation",
   studyMode: "Online Distance Learning (ODL)",
   areaOfStudy: "Business",
@@ -113,17 +77,70 @@ const mockQualificationInfo: Qualification[] = [
     programmeName: "SPM",
     transcriptFile: {}
   }
-];
+]; */
 
 const supabase = createClient();
 
+const getUserID = async () => {
+  const user = await supabase.auth.getUser();
+  return user.data.user?.id;
+};
+
+const userEmail = async () => {
+  const user = await supabase.auth.getUser();
+  return user.data.user?.email;
+};
+
+const getAppData = async () => {
+  const { data, error } = await supabase
+    .from("apps")
+    .select()
+    .eq("user_id", await getUserID());
+
+  if (error) {
+    console.log(error);
+  }
+  return data;
+};
+
+const PersonalInfoDb = await getAppData();
+
+const mockData = {
+  email: await userEmail(),
+  personalInfo: PersonalInfoDb?.[0]?.user_meta ?? {
+    firstName: "",
+    lastName: "",
+    nickname: "",
+    phoneNumber: "",
+    nationality: ""
+  },
+  programmeInfo: PersonalInfoDb?.[0]?.prog_info ?? {
+    level: "",
+    studyMode: "",
+    areaOfStudy: "",
+    availableProgramme: ""
+  },
+  qualificationInfo: PersonalInfoDb?.[0]?.qual_info ?? [
+    {
+      id: "",
+      results: "",
+      institute: "",
+      graduateYear: "",
+      programmeName: "",
+      transcriptFile: {}
+    }
+  ]
+};
+
 export default function ApplicationForm() {
-  const [personalInfo, setPersonalInfo] =
-    useState<PersonalInfo>(mockPersonalInfo);
-  const [programmeInfo, setProgrammeInfo] =
-    useState<ProgrammeInfo>(mockProgrammeInfo);
+  const [personalInfo, setPersonalInfo] = useState<PersonalInfo>(
+    mockData.personalInfo
+  );
+  const [programmeInfo, setProgrammeInfo] = useState<ProgrammeInfo>(
+    mockData.programmeInfo
+  );
   const [qualificationInfo, setQualificationInfo] = useState<Qualification[]>(
-    mockQualificationInfo
+    mockData.qualificationInfo
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -191,6 +208,7 @@ export default function ApplicationForm() {
               <div>
                 <Label htmlFor="firstName">First Name</Label>
                 <Input
+                  disabled
                   id="firstName"
                   name="firstName"
                   value={personalInfo.firstName}
@@ -200,6 +218,7 @@ export default function ApplicationForm() {
               <div>
                 <Label htmlFor="lastName">Last Name</Label>
                 <Input
+                  disabled
                   id="lastName"
                   name="lastName"
                   value={personalInfo.lastName}
@@ -209,6 +228,7 @@ export default function ApplicationForm() {
               <div>
                 <Label htmlFor="nickname">Nickname</Label>
                 <Input
+                  disabled
                   id="nickname"
                   name="nickname"
                   value={personalInfo.nickname}
@@ -218,6 +238,7 @@ export default function ApplicationForm() {
               <div>
                 <Label htmlFor="phoneNumber">Phone Number</Label>
                 <Input
+                  disabled
                   id="phoneNumber"
                   name="phoneNumber"
                   value={personalInfo.phoneNumber}
@@ -227,15 +248,17 @@ export default function ApplicationForm() {
               <div>
                 <Label htmlFor="email">Email</Label>
                 <Input
+                  disabled
                   id="email"
                   name="email"
-                  value={personalInfo.email}
+                  value={mockData.email}
                   onChange={handlePersonalInfoChange}
                 />
               </div>
               <div>
                 <Label htmlFor="nationality">Nationality</Label>
                 <Input
+                  disabled
                   id="nationality"
                   name="nationality"
                   value={personalInfo.nationality}
@@ -256,6 +279,7 @@ export default function ApplicationForm() {
               <div>
                 <Label htmlFor="areaOfStudy">Area of Study</Label>
                 <Input
+                  disabled
                   id="areaOfStudy"
                   name="areaOfStudy"
                   value={programmeInfo.areaOfStudy}
@@ -265,6 +289,7 @@ export default function ApplicationForm() {
               <div>
                 <Label htmlFor="level">Level</Label>
                 <Input
+                  disabled
                   id="level"
                   name="level"
                   value={programmeInfo.level}
@@ -274,6 +299,7 @@ export default function ApplicationForm() {
               <div>
                 <Label htmlFor="availableProgramme">Available Programme</Label>
                 <Input
+                  disabled
                   id="availableProgramme"
                   name="availableProgramme"
                   value={programmeInfo.availableProgramme}
@@ -283,6 +309,7 @@ export default function ApplicationForm() {
               <div>
                 <Label htmlFor="studyMode">Study Mode</Label>
                 <Input
+                  disabled
                   id="studyMode"
                   name="studyMode"
                   value={programmeInfo.studyMode}
@@ -299,17 +326,18 @@ export default function ApplicationForm() {
             <h2 className="text-2xl font-semibold mb-4">Qualifications</h2>
             <div className="space-y-6">
               {qualificationInfo.map((q, index) => (
-                <div key={q.id} className="border p-4 rounded-lg">
+                <div key={index} className="border p-4 rounded-lg">
                   <h3 className="text-lg font-semibold mb-4">
                     Qualification {index + 1}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor={`qual-programmeName-${q.id}`}>
+                      <Label htmlFor={`qual-programmeName-${index}`}>
                         Programme Name
                       </Label>
                       <Input
-                        id={`qual-programmeName-${q.id}`}
+                        disabled
+                        id={`qual-programmeName-${index}`}
                         name="programmeName"
                         value={q.programmeName}
                         onChange={(e) =>
@@ -322,11 +350,12 @@ export default function ApplicationForm() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor={`qual-institute-${q.id}`}>
+                      <Label htmlFor={`qual-institute-${index}`}>
                         Institute
                       </Label>
                       <Input
-                        id={`qual-institute-${q.id}`}
+                        disabled
+                        id={`qual-institute-${index}`}
                         name="institute"
                         value={q.institute}
                         onChange={(e) =>
@@ -339,11 +368,12 @@ export default function ApplicationForm() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor={`qual-graduateYear-${q.id}`}>
+                      <Label htmlFor={`qual-graduateYear-${index}`}>
                         Graduate Year
                       </Label>
                       <Input
-                        id={`qual-graduateYear-${q.id}`}
+                        disabled
+                        id={`qual-graduateYear-${index}`}
                         name="graduateYear"
                         type="number"
                         value={q.graduateYear}
@@ -357,9 +387,10 @@ export default function ApplicationForm() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor={`qual-results-${q.id}`}>Results</Label>
+                      <Label htmlFor={`qual-results-${index}`}>Results</Label>
                       <Input
-                        id={`qual-results-${q.id}`}
+                        disabled
+                        id={`qual-results-${index}`}
                         name="results"
                         value={q.results}
                         onChange={(e) =>
@@ -384,7 +415,10 @@ export default function ApplicationForm() {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="flex justify-end">
+        <CardFooter className="flex justify-end gap-4">
+          <Button variant={"outline"} asChild>
+            <Link href="/setup">Reset</Link>
+          </Button>
           <Button onClick={handleSubmitApplication} disabled={isSubmitting}>
             {isSubmitting ? "Submitting..." : "Submit Application"}
           </Button>
